@@ -133,6 +133,7 @@
         @Input decorator enables for the property to be used under the selector tag of the component which has the property that has been shared.
         We can also assign an alias for the property name to be used outside of the component. To do so:
             Just pass the aliasName as a argument in the @Input() decorator. eg: @Input('aliasName')
+
 -Catching an event from other components:
     To catch an event from other components and to fetch data along with it, Do the following:
         Create emitable event property (emitable object).
@@ -146,6 +147,7 @@
             <selectorName (propName)="funcName($event)"></selectorName>
             Here, propName is the EventEmitter object emitted from the other component, funcName is the function which fetches the values emitted by those objects.
     Alias for the EventEmitter can be used in the same way as in @Input decorator, for the @Output decorator.
+
 -View Encapsulation:
     By default, Angular restricts to apply the defined styles in the css file of the root app to all the components.
     The components will by default only follow the styles which are defined in their css file.
@@ -158,3 +160,29 @@
             None can be replaced by Native or Emulated.
             Emulated here implies to use ViewEncapsulation, which is already done by Angular by default, so there is no need to add encapsulation property to the @Component decorator.
             Native is the same as Emulated, but is not supported by all the browsers, which is why its better to use Emulated.
+
+-Using Local References in Templates:
+    Local References are holders which are used to fetch the HTMLInputElement, i.e. the whole HTML tag, not just its value.
+    Local References can be used only in the template file.
+    Example:
+        <input type="text" #refVarName>
+        Here, # is used to define a local reference variable.
+        The variable name, followed by '#', can now be used anywhere in the template file.
+        For Example, if we pass a local reference variable as a function argument, it will pass the whole html element as an argument, not only its value.
+        To fetch the value of the html element, simply type refVarName.value either in the template file or in the typescript file.
+
+-Accessing Template using @ViewChild:
+    Another method to fetch the value of any html element is by using a local reference and @ViewChild.
+    @ViewChild is a decorator placed before a property in a typescript file to convert the property to the type ElementRef.
+    To convert a property to type ElementRef, do the following:
+        Place a local reference on a html element.
+        In the typescript file, create a property as follows:
+            @ViewChild('localRefVarName') propertyName: ElementRef;
+        Here ViewChild and ElementRef needs to be imported from '@angular/core'.
+    Now, to get ElementRef object's value, use the following:
+        propertyName.nativeElement.value
+
+-Projecting content into components using ng-content:
+    By default, Angular ignores everything which is placed between the opening and closing tags of the selector of a component.
+    If we want that component to be displayed at a specific position in the template file of that component, simply add <ng-content></ng-content> in the template file of the component.
+    Now all the data between the opening and closing tags of the selector of the component will be displayed as the part of the template file of the component where the ng-content element is placed.
