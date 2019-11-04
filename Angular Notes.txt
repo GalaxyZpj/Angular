@@ -1,0 +1,160 @@
+-Angular Installation:
+    Install node js.
+    After it is installed, for mac, run the following line in terminal:
+    $ sudo npm install -g @angular/cli@latest
+
+-Creating a new project:
+    First cd into desired directory then run the following line in terminal:
+    $ ng new <appName>
+
+-Running the server:
+    Run the following:
+    $ ng serve
+
+-Directives:
+    [(ngModel)] = "varName"         // This is a directive which stores the info in the specified variable.
+
+-Adding Bootstrap and saving it in the Project:
+    cd to the project folder.
+    Use the following command to download bootstrap for the project using npm manager:
+    $ npm install --save bootstrap@3
+    This will only save bootstrap for that perticular project.
+
+-Adding Bootstrap to the config file:
+    Go to angular.json file and under styles list, add the path of the bootstrap.min.css file as follows:
+    "node_modules/bootstrap/dist/css/bootstrap.min.css"
+
+-Working of Angular:
+    We first start with the index.html file. This is the html file which is displayed in the browser.
+    When this page is loaded, a file named main.ts is executed with it.
+    In main.ts, there is a "bootstrapModule" which passes the imported "AppModule" as an argument.
+    In 'app.module.ts' file, 'AppComponent' is passed in the 'bootstrap' array which tells angular to include all the 'app.component' files in the project.
+    Angular now can read all the 'app.component' files.
+    'app.component.ts' file contains a decorator '@Component' under which there is a variable named 'selector'.
+    The specified 'selector acts as an html tag under which all the content in the 'app.component.html' file is included in the 'index.html' file.
+
+-Creating a Component:
+    To create a component for a specific app, inside the app folder, create a folder with the name same as the component name.
+    Create a file inside the folder named as 'componentName.component.ts'.
+    Now, inside this file, first we need to import the 'Component' element so that js compiler should know what the '@Component' means.
+    To include the 'Component', type the following in the ts file:
+    -> import { Component } from '@angular/core';
+    Then declare the '@Component' decorator and add its deatils as follows:
+    -> @Component({
+            selector: 'app-name',
+            templateUrl: './name.component.html'        //For this, there must be a name.component.html file in the component folder which contains the content of the component.
+        })
+    Then we need to enter the following statement:
+    -> export class NameComponent { }
+
+-Adding the created component to the app.module.ts file:
+    To include the component to our project, we need to make changes in the app.module.ts file.
+    We first import our created module using following statement:
+    -> import { NameComponent } from './name/name.component';       //includes your component to the ts file
+    Now under declarations, Enter the name of your component as 'NameComponent'.
+    Now our component is registered and ready to use.
+
+-Using created Components:
+    The created components can only be used in the app.component.html file.
+    It can be used using the selector as a html tag which we defined for the component.
+
+-Creating Component using CLI:
+    $ ng generate component compName        or          $ ng g c compName
+    This will automatically create a folder in the apps folder with the name of the component and will automatically make the necessary changes in the app.module.ts file.
+
+-> One component can be used in the other component with the help of its selector.
+
+-Using Inline HTML:
+    To use inline html instead of specifying a template in the templateUrl in component.ts file, use template and assign it with the html code wrapped in quotes.
+    To use multiline inline html, wrap the html with backtic ( ` ) instead of quotes.
+
+-Different ways of using selectors:
+    By default, when we mention the selector's name in quotes in the component.ts file, we use the selector as an element in the template file.
+    There are more ways to use a selector.
+    -> Use selector as a class:
+        Inside the quotes of the selector variable, use '.selectorName' to use the selector as a class same as in css.
+    ->Use selector as an attribute:
+        Wrap the name of the selector with square brackets ( [] ) to use the selector as an attribute of any html tag.
+
+-Data Binding:
+    It refers to the communication between the typescript file and the template (HTML) file.
+    There are different forms of data binding:
+        Output data binding:
+            -String Interpolation
+            -Property Binding
+        Input data binding:
+            -Event Binding
+        Two-way Binding
+
+-String Interpolation:
+    This allows us to use the variables declared in the class in the component.ts file in the template file.
+    To call the variable, use {{}} and inside it input the name of the variable or the method which returns a string.
+
+-Property Binding:
+    It is used to control the html block using the code in the component.ts file.
+    We can bind a HTML Attribute with a function defined in the .ts file using property binding.
+    For eg:
+        Disabled attribute for button tag can be binded to a function which enables the button after 2 seconds of the pageload using property binding.
+        To use property binding here, we use the following syntax where we place the disabled attribute:
+            [disabled]="funcName"
+        Here, funcName will be replaced by a function which will set a timeout of 2 seconds for the button.
+
+-Event Binding:
+    It is used to execute the code block as per the action commited by the user(for eg. click of a button).
+    To use event binding, inside a html tag, use paranthesis (inside these, name of the event, such as click, mouseover, etc) and set it equal to the function name or a small block of code inside the quotes.
+    To dynamically display the text which user types in a text box using event binding:
+        First we create a input type text and in its attributes, we create an event binding (input)="funcName($event)"      //Notice the argument $event
+        The argument $event helps to fetch the value dynamically from the text box and keep on updating value using the defined function in the typescript file.
+
+-Two way data binding:
+    As the name suggests, it can change both the input and the output data dynamically.
+    This is used by using [(ngModel)] = "varName";
+    It will change the value of the html element with the two way data binding to the varName as well as it can change the value of varName to whatever user defines it in the html element.
+
+-Directives:
+    Prebuilt Directives:
+        *ngIf = "true/false"        // * is used for structural directives, i.e. which adds or removes the element from the DOM
+        Usage of else with ngIf:
+            eg: <p *ngIf="true/false" else localVarName> Some Text </p>         // localVarName is used to refer the ng-template tag with the local referal named localVarName
+                <ng-template #localVarName>         // # is used for local referal
+                    Some Text
+                </ng-template>
+                Here ng-template tag is used as a substitute element which will be present in the DOM if else condition is true.
+        [ngStyle] = "{ propertyName: 'value' }"         // ngStyle is a builtin attribute directive which is binded to the element with property binding
+        [ngClass] = "{ className: condition }"      //another attribute directive, changes classes dynamically
+        *ngFor = "let varName of listName"          //a structural directive, can add elements dynamically
+
+-Sharing of a property between components:
+    Angular has a functionality to share a property of a component to all the components where the selector of the component, of which the property is to be shared, is used.
+    To share a property, do the following:
+        Go to the component.ts file which has the property to be shared.
+        import { Input } from '@angular/core'.          //Input is a decorator which is placed before the property which can now get input from other components
+        Now, before the property declaration, use @Input() propertyName = 'something';
+        @Input decorator enables for the property to be used under the selector tag of the component which has the property that has been shared.
+        We can also assign an alias for the property name to be used outside of the component. To do so:
+            Just pass the aliasName as a argument in the @Input() decorator. eg: @Input('aliasName')
+-Catching an event from other components:
+    To catch an event from other components and to fetch data along with it, Do the following:
+        Create emitable event property (emitable object).
+        Example:
+            @Output() propName = new EventEmitter<{data: datatype}>();          // here EventEmitter is an object which emits the data inside the <{}> to other components where these EventEmitter objects are used as event binding
+            To use EventEmitter and Output, both must be imported from '@angular/core'.     // @Output is a decorator which is used to send the data of the property from this component to another component
+        To emit the property out of the component, use the following:
+            this.propName.emit({data: dataValue});
+        Now, to catch the emitted data, the EventEmitter objects can be used as the event listner via event binding with the selector for the component which has the EventEmitter objects.
+        To do so, do the following:
+            <selectorName (propName)="funcName($event)"></selectorName>
+            Here, propName is the EventEmitter object emitted from the other component, funcName is the function which fetches the values emitted by those objects.
+    Alias for the EventEmitter can be used in the same way as in @Input decorator, for the @Output decorator.
+-View Encapsulation:
+    By default, Angular restricts to apply the defined styles in the css file of the root app to all the components.
+    The components will by default only follow the styles which are defined in their css file.
+    Angular,by default, adds a unique attribute to all the html tags of a component.html file when seen in the inspect tool in the browser.
+    To override this behavior, or to say, to expose a component to follow the styles of the app-root component, do the following:
+        Go to the component.ts file of the component.
+        Under the @Component decorator, add the following:
+            encapsulation: ViewEncapsulation.none       // also import ViewEncapsulation from '@angular/core'
+            None here implies that the styles defined in the css file of the component are applied globally to the angular app.
+            None can be replaced by Native or Emulated.
+            Emulated here implies to use ViewEncapsulation, which is already done by Angular by default, so there is no need to add encapsulation property to the @Component decorator.
+            Native is the same as Emulated, but is not supported by all the browsers, which is why its better to use Emulated.
