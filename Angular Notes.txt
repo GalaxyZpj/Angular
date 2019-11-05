@@ -20,9 +20,9 @@
     $ npm install --save bootstrap@3
     This will only save bootstrap for that perticular project.
 
--Adding Bootstrap to the config file:
-    Go to angular.json file and under styles list, add the path of the bootstrap.min.css file as follows:
-    "node_modules/bootstrap/dist/css/bootstrap.min.css"
+-Adding Bootstrap to style.css file:
+    Add the following to style.css :
+        @import "~bootstrap/dist/css/bootstrap.css"
 
 -Working of Angular:
     We first start with the index.html file. This is the html file which is displayed in the browser.
@@ -186,3 +186,33 @@
     By default, Angular ignores everything which is placed between the opening and closing tags of the selector of a component.
     If we want that component to be displayed at a specific position in the template file of that component, simply add <ng-content></ng-content> in the template file of the component.
     Now all the data between the opening and closing tags of the selector of the component will be displayed as the part of the template file of the component where the ng-content element is placed.
+
+-Component Lifecycle:
+    There are several phases or so called activities in a component, from its initiation to any changes made in it.
+    These phases are refered to as several so called functions which run on their own when a specific phase, for example: any changes made in a component, is reached.
+    If a user want to perform certain activity at a perticular phase, he can include lines of code in those functions which are executed in those phases.
+    There are several types of Functions which are executed on several phases.
+    These functions can be stated inside the component class.
+    The functions and their instant of execution are defined below:
+        ngOnChanges(changes: SimpleChanges): called after a bound input property changes. This is the only Lifecycle function that recives an argument as mensioned with the functionName.
+        ngOnInit(): called once the component is initialized. Is executed after the constructor.
+        ngDoCheck(): called during every change detection run.
+        ngAfterContentInit(): called after content has been projected into the view via ng-content.
+        ngAfterContentChecked(): called every time the project content has been checked.
+        ngAfterViewInit(): called after the component's view and child views have been initialized.
+        ngAfterViewChecked(): called every time the view and child views have been checked.
+        ngOnDestroy(): called when an element is removed from the DOM.
+    These Lifecycle components need to be imported from '@angular/core'.
+    If you want, you can specify in the defination of the class that which Lifecycle component is defined for the component. 
+        For example:
+            export class compNameComponent implements OnInit, OnChanges {}      //here OnInit and OnChanges is specified after the keyword 'implements'
+    Notes on working of these functions:
+        ngOnChanges executes before ngOnInit.
+        If we console.log the SimpleChanges argument of ngOnChanges, we will see a SimpleChanges object which has the information regarding the past changes or the current version of change made to the component.
+-Getting access to ng-content using @ContentChild:
+    We can access the html elements, between the selector tags of a component, from the typescript file using @ContentChild.
+    It is used in the same way as @ViewContent, setting a local reference, passing the localReference as the argument of @ContentChild decorator and accessing the element in the form of ElementRef object.
+    @ContentChild needs to be imported form '@angular/core'.
+
+
+

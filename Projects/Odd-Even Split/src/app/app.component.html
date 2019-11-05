@@ -1,0 +1,12 @@
+<div class="container">
+  <app-game-control (sendNum)="numRecieved($event)"></app-game-control>
+  <hr>
+  <div class="row">
+    <div class="col-md-1">
+      <app-odd *ngFor="let oddNum of oddNumbers" [oddNumber]="oddNum"></app-odd>
+    </div>
+    <div class="col-md-1">
+      <app-even *ngFor="let evenNum of evenNumbers" [evenNumber]="evenNum"></app-even>
+    </div>
+  </div>
+</div>
