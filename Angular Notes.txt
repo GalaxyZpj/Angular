@@ -115,7 +115,7 @@
     Prebuilt Directives:
         *ngIf = "true/false"        // * is used for structural directives, i.e. which adds or removes the element from the DOM
         Usage of else with ngIf:
-            eg: <p *ngIf="true/false" else localVarName> Some Text </p>         // localVarName is used to refer the ng-template tag with the local referal named localVarName
+            eg: <p *ngIf="true/false; else localVarName"> Some Text </p>         // localVarName is used to refer the ng-template tag with the local referal named localVarName
                 <ng-template #localVarName>         // # is used for local referal
                     Some Text
                 </ng-template>
@@ -213,6 +213,4 @@
     We can access the html elements, between the selector tags of a component, from the typescript file using @ContentChild.
     It is used in the same way as @ViewContent, setting a local reference, passing the localReference as the argument of @ContentChild decorator and accessing the element in the form of ElementRef object.
     @ContentChild needs to be imported form '@angular/core'.
-
-
 
