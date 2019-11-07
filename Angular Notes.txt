@@ -214,3 +214,98 @@
     It is used in the same way as @ViewContent, setting a local reference, passing the localReference as the argument of @ContentChild decorator and accessing the element in the form of ElementRef object.
     @ContentChild needs to be imported form '@angular/core'.
 
+-Directives:
+    Directives are attributes that can be applied on an element which can change the properties of the element.
+    To create directives:
+        Inside the app folder, Create a folder with the name of the Directive.
+        Create a file named 'directiveName.directive.ts'.
+        To let Angular know about our directive, do the following:
+            Goto app.module.ts file.
+            In the declarations list, add directiveNameDirective.
+            Also add the import for the directive file.
+        Inside the typescript file, create a class with the name 'directiveNameDirective'.
+        Put '@Directive' decorator on the top of the class.         //Directive needs to be imported from '@angular/core'
+        In the argument of @Directive following properties are defined:
+            @Directive({
+                selector: '[selectorName]'          // square brackets makes this selector an attribute
+            })
+        Inside the class, we define a constructor as follows:
+            constructor(private elementRef: ElementRef) {}
+            Here, elementRef helps us access the html element and its properties in the typescript file itself.
+        Now, we define ngOnInit, also add it in 'implements', and inside it, we can define the functionality of our directive.
+        For example:
+            ngOnInit() { this.elementRef.nativeElement.style.backgroundColor = 'green'; }
+            This adds the functionality to change the backgroundColor to green of the element which has our directive.
+    Directives can also be created using AngularCLI via executing the following line in the terminal:
+        $ ng generate directive directiveName       or      ng g d directiveName
+        This will generate a directive.ts file and a spec file for the same in the root of app folder which can be moved to desired locations which further their path needs to be informed to the 'app.module.ts'.
+    To use this directive in a template file, just add the directive selector's name as an attribute in the element.
+    For example:
+        <p directiveName> </p>
+    Using Renderer To Built a better AttributeDirective:
+        Accessing the DOM using ElementRef object is not a good practice.
+        So Renderer can be used for the same.
+        Renderer is also used to set functionality of the directive.
+        To use Renderer, do the following:
+            Define a constructor as follows:
+                constructor(private elRef: ElementRef, private renderer: Renderer2) {}
+            Now use renderer in ngOnInit as follows:
+                this.renderer.setStyle(this.elRef.nativeElement, 'propertyName(for example backgroundColor)', 'propertyValue');
+    @HostListner:
+        @HostListner decorator can be used inside a directive typescript file.
+        This decorator gives us a functionality to set an event to happen when certain event happens on the element where our directive is used.
+        Inside the class defination, Use this as following:
+            @HostListner('eventName') eventNameFunc(eventData: Event) {         // here eventName is an event recognized by the DOM. For eg: click, mouseenter, mouseleave, etc
+                // here we can set the events to occur on the element when the eventNameFunc occurs on the element.
+            }
+        HostListner needs to be imported From '@angular/core'.
+    @HostBinding:
+        This decorator can be used to bind a property of the host element to a property in the typescript file so that we can easily change that property of the host element by simply changing the value of the property assigned to the property with the @HostBinding decorator.
+        For example:
+            @HostBinding('style.backgroundColor') backgroundColor: string = 'transparent';
+            Here, backgroundColor is a property name assigned with the value that is to be set for the property of the host element which is passed as an argument in the decorator.
+            Now, this.backgroundColor can be called anywhere in the class to assign a new value to the backgroundColor property of the host element.
+            Initially in this defination, backgroundColor is given any value to avoid any errors.
+        HostBinding needs to be imported from '@angular/core'.
+    -Interpretation of '*' in some structural directives:
+        * before ngIf implies that ngIf is a structural directive, i.e. can bring change in the DOM itself.
+        Although what it really does behind the scenes is, it passes the ngIf property via property binding(square brackets) in the element '<ng-template>'.
+        For example:
+            <ng-template [ngIf]="true/false">
+                some content
+            </ng-template>
+            Here, ngIf is a property of ng-template element. ng-template renders within the DOM only when the nfIf condition is set true.
+    -Building our own structural directive:
+        Steps:
+            Generate a directive either manually pr by using CLI command.
+            In the directive.ts file, do the following:
+                Inject the TemplateRef and ViewContainerRef argument in the constructor as follows:
+                    constructor(private templateRef: TemplateRef, private vcRef: ViewContainerRef) {}
+                    TemplateRef is used to access the Template inside the element on which this directive is used.
+                    ViewContainerRef is used to mark the location of the element on which this directive is used.
+                    Later these helps in the manupilation of the ViewContainer of the element in the DOM.
+                Define a property inside the class which recieves the condition for the directive to take action.
+                Define the property as per the following example:
+                    @Input() set directiveName(condition: boolean) {        //set here specifies that directiveName will be a method which will return the element of the DOM
+                        if(!condition) {            // directive functionality
+                            this.vcRef.createEmbeddedView(this.templateRef);        // this method is used to insert the template in the templateRef property into the vcRef which will then be shown in the DOM
+                        }   else {
+                            this.vcRef.clear();     // this method clears the ViewContainer from the DOM
+                        }
+                    }
+                Now as we use *ngIf, we can use our custom structural directive in the same way.
+                The property used to fetch the condition as the input should have the same name as our directive.
+    -ngSwitch:
+        It is a builtin structural directive.
+        It is used in the same way as the switch statement in c or c++ or in any other language.
+        Its syntax can be explained using an example:
+            <div [ngSwitch]="value">        // here value is assigned a value in the typescript file
+                <p *ngSwitchCase="5">Value is 5</p>
+                <p *ngSwitchCase="10">Value is 10</p>
+                <p *ngSwitchCase="15">Value is 15</p>
+                <p *ngSwitchDefault>Value is Default</p>
+            </div>
+            Here, ngSwitch is used using property binding and accepts a value.
+            ngSwitch then matches the value with all the values stated in the ngSwitchCase.
+            Whichever value matches, That element stays in the DOM, rest are removed.
+            If no value matches, ngSwitchDefault stays in the DOM, rest are removed.
