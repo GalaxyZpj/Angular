@@ -309,3 +309,43 @@
             ngSwitch then matches the value with all the values stated in the ngSwitchCase.
             Whichever value matches, That element stays in the DOM, rest are removed.
             If no value matches, ngSwitchDefault stays in the DOM, rest are removed.
+
+-Service:
+    Creating a service:
+        Create a file named 'serviceName.service.ts' in a suitable location inside the app folder.
+        Inside the service.ts file, simply create a class with name 'serviceNameService'.
+        Inside this class, create and define the methods which you want your service to have.
+    Using the service:
+        To use this service inside any component, do the following:
+            import { serviceNameService } from 'serviceLocation';
+            Add the following property inside the @Component decorator argument:
+                providers: [ serviceName ]
+            In the constructor of the component, pass the following argument:
+                constructor(private serviceNameProp: serviecNameService) {}
+            To use a service method inside the class, type the following:
+                this.serviceNameProp.methodName();
+        Now for the working of the above mensioned steps:
+            Angular is informed that our component needs to use a service, by passing the service as an argument in the constructor of the component as shown above.
+            Now angular knows that our component needs the mensioned service, now where does angular get it from...
+            A dependency injector comes into act when angular needs something, it injects the service into the component.
+            For injecting the service into our component, we need to tell angular the provider of the service from where the dependency injector will inject the service.
+            As mensioned in above steps, we add the provider to our service in the @Component decorator arguement.
+            The provider also needs to be imported into the component, hence the import statement at the top.
+    Understanding the Hierchical Injector:
+        It is responsible to inject the instance of our service into our component.
+        Its availability of the instance of the service is mensionsed below with the reference to where it was instantiated:
+            AppModule: same instance of service is available Application-Wide.
+            AppComponent: same instance of service is available for all components(but not for other services).
+            Any other component: Same instance of service is available for the component and all its child components.
+        To use a parent instance of a service in a component:
+            Simply remove the service from the providers array.
+            Now a new instance for the service wont be created, the component will be using the parent instance of the service.
+            The import and constructor do needs to include the service, just providers doesn't need it.
+    Using a service inside a service:
+        To do so, do the following:
+            Make sure that the service we want to inject is instantiated in the app.module.ts file.
+            Go to the service.ts file where you want to inject another service.
+            In this file, import the service which is to be injected as we do in other components.
+            On top of the class, add a @Injectable decorator which tells angular that this service will recieve another service which is to be injected into this service. Injectable needs to be imported from '@angular/core'.
+            Now we can use the methods of the injected service as we do in components.
+    
