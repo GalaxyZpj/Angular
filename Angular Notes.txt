@@ -19,10 +19,9 @@
     Use the following command to download bootstrap for the project using npm manager:
     $ npm install --save bootstrap@3
     This will only save bootstrap for that perticular project.
-
--Adding Bootstrap to style.css file:
-    Add the following to style.css :
-        @import "~bootstrap/dist/css/bootstrap.css"
+    Adding Bootstrap to style.css file:
+        Add the following to style.css :
+            @import "~bootstrap/dist/css/bootstrap.css"
 
 -Working of Angular:
     We first start with the index.html file. This is the html file which is displayed in the browser.
@@ -209,6 +208,7 @@
     Notes on working of these functions:
         ngOnChanges executes before ngOnInit.
         If we console.log the SimpleChanges argument of ngOnChanges, we will see a SimpleChanges object which has the information regarding the past changes or the current version of change made to the component.
+
 -Getting access to ng-content using @ContentChild:
     We can access the html elements, between the selector tags of a component, from the typescript file using @ContentChild.
     It is used in the same way as @ViewContent, setting a local reference, passing the localReference as the argument of @ContentChild decorator and accessing the element in the form of ElementRef object.
@@ -348,4 +348,70 @@
             In this file, import the service which is to be injected as we do in other components.
             On top of the class, add a @Injectable decorator which tells angular that this service will recieve another service which is to be injected into this service. Injectable needs to be imported from '@angular/core'.
             Now we can use the methods of the injected service as we do in components.
-    
+
+-Routing:
+    Routing provides the functionality to our angular app, to navigate between different components at a time.
+    To setup routing:
+        While creating a new project, AngularCLI will ask you to enable routing for your app, simply type 'y'.
+        This will generate a file named 'app-routing.module.ts' in the root of the app folder.
+        This file will be automatically imported into 'app.module.ts' file and 'AppRoutingModule' import will be automatically added via CLI.
+        Now, to set routes for our component, follow the steps:
+            Goto 'app-routing.module.ts' file.
+            There will be an array declared as 'const routes: Routes = [];'.
+            This array contains all the route paths for our components.
+            So to setup the paths, add the path and componentName in this array as shown below:
+                const routes: Routes = [
+                    { path: 'url1', component: 'componentName1'},
+                    { path: 'url2', component: 'componentName2'},
+                ];
+    To load components via routing:
+        In the 'app.component.html' file, wherever there are buttons to load the specified component, inside the <a> tag, add the following attribute:
+            <a routerLink="/">      or      <a routerLink="/path">      or      <a [routerLink]="['/path']">
+    Routing Path:
+        A component is loaded by specifying the path in the routerLink attribute.
+        There are different ways of specifying the path which may lead to different paths:
+            "/path": absolute path, will load localhost:4200/path.
+            "path" or "./path": relative path, add path to the current path and then load it.
+            "../path": will go up one level on the path and then add path to it and then load it.
+    To change the highlighted opened tab for the component dynamically:
+        After 'routerLink', add another attribute named 'routerLinkActive'.
+        This accepts a class name as the value as applies that class onto the component tab which is active.
+        When using routerLinkActive, we find that the home tab has that class always applied.
+        This is because routerLinkActive works in a way that if a section of path contains the url of the component, the class will then be applied on that component tab as well.
+        So to change this behavior of routerLinkActive, we use [routerLinkActiveOptions], with property binding.
+        routerLinkActiveOptions helps us to configure the behavior of routerLinkActive.
+        To change the above mensioned behavior of routerLinkActive, pass the value in routerLinkActiveOptions as follows:
+            [routerLinkActiveOptions]="{exact: true}"
+            This will inform routerLinkActive that apply the class only if the path exactly matches.
+    Navigating Programatically:
+        We can also navigate to a route from the typescript file.
+        For example: 
+            We add a button and (click)="funcName()" in it.
+            In the typescript file, we need to do the following:
+                import { Router } from '@angular/router';
+                constructor(private router: Router) {}
+            Now in the funcName, we do the following:
+                this.router.navigate(['/path']);
+            This will enable us to goto the component at the mensioned path on cliking the button.
+        Using Relative Paths in Programatic Navigation:
+            If we try to use the relative route(without '/') for the path, by default, it works in the same way as the absolute route.
+            The navigate() function doesn't know currently at which path we are. So by default, it is going to relate the path from the root.
+            To set a relative path, i.e. to let navigate() know our current path, we do the following:
+                import { Router } from '@angular/router';
+                constructor(private router: Router, private route: ActivatedRoute) {}
+                this.router.navigate(['relativePath'], {navigate: this.route});
+            ActivatedRoute enables navigate() to know about our current path.
+            The js object in the argument of navigate(), 'navigate' sets the relative route for navigate().
+    Passing parameters to routes:
+        We can pass parameters to our routes so that we can load a dynamic route.
+        To do so:
+            const appRoutes: Routes = [
+                { path: 'path/:id/:name', component: AnyComponent },      // here id and name are dynamic parameters
+            ]
+        To fetch the route parameters: 
+            In the typescript file, do the following:
+                import { ActivatedRoute } from '@angular/router';
+                constructor(private route: ActivatedRoute) {}
+                this.id  = this.route.snapshot.params['id'];            // this.id is a local property of the typescript file
+                this.name = this.route.snapshot.params['name'];         // this.name is a local property of the typescript file
+                Here, snapshot.params[''] is a method which helps us to retrieve the data which was stored in the dynamic parameters of the path.
