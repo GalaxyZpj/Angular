@@ -415,3 +415,129 @@
                 this.id  = this.route.snapshot.params['id'];            // this.id is a local property of the typescript file
                 this.name = this.route.snapshot.params['name'];         // this.name is a local property of the typescript file
                 Here, snapshot.params[''] is a method which helps us to retrieve the data which was stored in the dynamic parameters of the path.
+        Fetch route parameters without using snapshot:
+            One disadvantage of using snapshot is that it can only be used for first initilization of the component.
+            If we try to redirect onto the same component with different parameters, the changes will not be displayed if we output those parameters as angular won't reinstantiate the component we are already on.
+            Hence here snapshot woultn't function.
+            So for this, we use an observable 'params'.
+                this.router.params.subscribe(
+                    (params: Params) => {                   // Params needs to be imported from '@angular/router'
+                        .....
+                    }
+                )
+            'params' function every time when our parameters changes.
+            An observable is used for asynchronous tasks, tasks about which we have no detail when will they occur.
+            Hence 'params' function irrespective of any time.
+    Passing Query parameters and fragments:
+        To pass a query parameter in the route:
+            Add another property via property binding, named as 'queryParams' to the <a> tag.
+            For the value of queryParams, we pass a javascript object to it which consists of key value pairs:
+                [queryParams]="{ allowEdit: '1' }"
+        To pass a fragment:
+            Add a property via property binding, named as 'fragment' to the <a> tag.
+            For the value of fragment, we pass a string:
+                [fragment]="'loading'"        or          fragment="loading"
+        Add queryParams and fragments Programatically:
+            this.router.navigate(['/path', 1, 'edit'], { queryParams: {allowEdit: '1'}, fragment: 'loading' });
+        Fetching queryParams and fragment from the route:
+            Inject ActivatedRoute to the typescript file.
+            this.route.queryParams.subscribe();         // for queryParams
+            this.route.fragment.subscribe();            // for fragment
+    Adding a child route:
+        { path: 'servers', component: ServersComponent, children: [
+            { path: ':id', component: ServerComponent},
+            { path: ':id/edit', component: EditServerComponent},
+        ]},
+        To load the child route, simply add a <router-outlet> in the template file of the parent.
+    To preserve our query parameters:
+        this.router.navigate(['edit'], {relativeTo: this.route, queryParamsHandling: 'preserve'});
+        Simply add this last 'queryParamsHandling' property and set it to 'presereve'.
+    Redirecting and Wildcard Routes:
+        To have a page for unknown url for the app, we will setup a page-not-found component for our app.
+        { path: '', redirectTo: '/path' }:
+            Here redirectTo is another property which we can add to our route defination which instead of a component, redirects to a path already specified in our angular app or on any other specified path.
+        { path: '**', redirectTo: '/not-found' }:
+            Here, '**' is used as a Wildcard Route.
+            It means that any other path other than paths specified for the app must redirect to the specified url.
+            IMPORTANT: The Wildcard Route should always be in the last in the Routes list.
+    Guarding the routes:
+        We can create Guards to decide weather user is allowed to access a perticulat route or not.
+        To do so:
+            We create a serveice named as 'auth-guard.service.ts'.      // name can be arbitary
+            Inside the file, we export a class named as 'AuthGuard' which implements 'canActivate'.
+            canActivate(): 
+                Interface that a class can implement to be a guard deciding if a route can be activated. 
+                If all guards return true, navigation will continue.
+                If any guard returns false, navigation will be cancelled. 
+                If any guard returns a UrlTree, current navigation will be cancelled and a new navigation will be kicked off to the UrlTree returned from the guard.
+                Syntax:
+                    canActivate(route: ActivatedRouteSnapshot, 
+                                state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {}
+                    import { Observable } from 'rxjs/Observable';
+                    import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router'
+            We can use our created guard service by adding the 'canActivate' property to the route in the 'Routes' array.
+            Example:    { path: 'servers', canActivate: [AuthGuard], component: ServersComponent }
+            The applied Guard will be applied to the child routes also.
+        To guard only the child routes:
+            Use canActivateChild() method in the 'auth-guard.service.ts file'.
+            Syntax:
+                canActivateChild(route: ActivatedRouteSnapshot, 
+                                state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {}
+                import { CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router'
+            We can use our created childguard service by adding the 'canActivateChild' property to the route in the 'Routes' array.
+    We can use a deactivation service to control weather a user is allowed to leave a route or not using 'canDeactivate'.
+    To use 'canDeactivate':
+        Create a new service named 'can-deactivate-guard.service.ts'.
+        Inside this file, Enter the following:
+        #####
+            import { Observable } from 'rxjs/Observable';
+            import { CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+
+            export interface CanComponentDeactivate {
+                canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean
+            }
+
+            export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
+                canDeactivate(component: CanComponentDeactivate,
+                    currentRoute: ActivatedRouteSnapshot,
+                    currentState: RouterStateSnapshot,
+                    nextState?: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+                        return component.canDeactivate();
+                    }
+            }
+        #####
+        'interface' sort of sets a layout of the canDeactivate function.
+        When exporting class, we use 'implements CanDeactivate<CanComponentDeactivate>' which is a generic type and accepts the CanComponentDeactivate interface to set the layout for the canDeactivate function.
+        Now we define 'canDeactivate()' function using the syntax mensioned above.
+        'canDeactivate' returns component.canDeactivate() which returns a boolean expression which states weather the user is allowed to navigate away from the page.
+        Now canDeactivate is available to use in any component by implementing the 'CanComponentDeactivate' in the class and using canDeactivate()
+    Adding static data to the route:
+        We can add static data while defining a path to call a component by adding an additional property named 'data'.
+        Syntax:
+            { path: 'not-found', component: componentName, data: {varName: 'content'} }
+        varName is now be accessed within the ts file by the ActivatedRoute module:
+            constructor(private route: ActivatedRoute) {}
+            ngOnInit() {
+                this.errorMessage = this.route.snapshot.data['varName'];
+                this.route.data.subscribe(
+                    (data: Data) => {
+                        this.errorMessage =  data['varName'];
+                    }
+                )
+            }
+    Executing Code before loading the route:
+        We can execute some code before loading the route using 'resolve'.
+        Create a resolver.service.ts file which includes an interface for the object which will be returned by the resolver, and the resolve class which will implement the Resolver<interfaceName>.
+        Syntax:
+            resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T
+        To use the resolver, we go to the Routes array and in the path, we add an additional property named 'resolve'.
+        Syntax:
+            { path: '\path', component: compNameComponent, resolve: {varName: resolverNameResolver} }
+            varName is a property which can be used in the loaded component.
+            varName will contained the object returned by the resolver defined in the resolver.service.ts file.
+        varName is accessible using the this.route.data.subscribe() method:
+            this.route.data.subscribe(
+                (data: Data) => {
+                    this.server = data['varName'];
+                }
+            )
