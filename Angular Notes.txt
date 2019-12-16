@@ -541,3 +541,76 @@
                     this.server = data['varName'];
                 }
             )
+
+-Observables:
+    Observable is said to be a data source.
+    It may be of 3 types: Handle Data
+                          Handle Error
+                          Handle Completion
+    Observables are added to Angular via rxjs.
+    Observables can be accessed by subscribing them using 'subscribe()' method.
+    It is necessary to unsubscribe observables as they may go on even after destroying the component.
+    Observables can be destroyed by storing the observable in a variable and later inside ngOnDestroy, unsubscribing it using 'unsubscribe()'.
+    All the Angular provided observables are automatically unsubscribed by Angular.
+    Creating a custom observable:
+        # import { Observable } from 'rxjs';
+        # const obsName = Observable.create(observer => {                 // this creates a new observable named obsName
+              defination for the actions of the observable.
+          });
+        Some methods for the Observable method:
+            Observable.next(): emits new data
+            Observable.error(new Error('errorString')): Throws an error 
+            Observable.complete(): Finishes the observable.
+    Modifying the functionality of an observable:
+        Manipulation of the data in an observable is possible by using 'pipe()'.
+        Example:
+            this.obsName.pipe(  operators are specified here  ).subscribe();
+        Different types of arguments can be specified for pipe, which are know as operators.
+        Operators are functions which can implement different type of operations on the data.
+        Few operators:
+            map(data => {}): implements the specified arrow function on the data of the observable.
+            filter(data => {}): let the observable work only if the specified condition inside the function returns true.
+    Subject:
+        It is a replacement for EventEmitter for cross component operations.
+        It works in the same way as the EventEmitter with a few differences:
+            subName = new Subject<boolean>();           // creating a Subject object
+            subName.next();             // used as emit() was used for an EventEmitter object
+            Can be subscribed as any other observable.
+
+-Forms:
+    Angular provides a better functionality to handle forms.
+    Using FormModule:
+        To use form module, go to app.module.ts file and do the following:
+            # import { FormModule } from '@angular/forms';
+            # @NgModule({
+                  imports: [
+                      FormsModule,
+                  ]
+              })
+    Accessing Forms in the form of javascript object from a template file:
+        Inside a template file, the code which is enclosed by the 'form' tag can be set to be used as a javascript object.
+        We need to select manually which input fields we need to include in our javascript object.
+        To do so:
+            Inside the form tag, goto the html element which is to be included in the js object.
+            Then do as shown with the help of an input tag:
+                <input type="text" ngModel name="elementName">
+                Here, ngModel is added so that the Form module should know it is to be included in the js object.
+                'name' is added to set a key for the fetched data from the element into the js object.
+        Now, to submit the data, we create a function with an argument of type 'NgForms' in the typescript file which handles the data after submition.
+        We bind that function with an event listner in the form attribute as shown below:
+            <form (ngSubmit)="onSubmit(f)" #f="ngForm">
+            'f' is a local reference which is passed into the onSubmit function.
+        Now, the argument of the function will contain a NgForm object which will include many properties.
+        One of the property will be 'value' which will contain the key value pairs of our defined inputs of the forms.
+        Using @ViewChild to access the form:
+            'f' acts as a local reference, hence we can also used @ViewChild approach as we used in components section.
+            We donot need to pass 'f' as the function argument for this approach.
+            Goto the typescript file, type the following:
+                @ViewChild('f') formName: NgForm;
+                'formName' property will now contain the javascript object of the type NgForm.
+    Form Validators:
+        We can add several valiadators to the html elements of the form to enhance the user experience.
+        Some of the validators are:
+            required: it is a directive provided by angular which sets the element to be required for it to be a valid input.
+            email: checks weather the email is valid or not.
+    

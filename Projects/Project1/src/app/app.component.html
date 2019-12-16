@@ -1,14 +1,9 @@
-<app-header (pageLoad)="navigate($event)"></app-header>
+<app-header></app-header>
 
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <h2>I'm working!</h2>
-      <app-recipes *ngIf="navToPage === 'recipes'; else shopList"></app-recipes>
-      <ng-template #shopList>
-        <app-shopping-list></app-shopping-list>
-      </ng-template>
-      
+      <router-outlet></router-outlet>      
     </div>
   </div>
 </div>
