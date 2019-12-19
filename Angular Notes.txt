@@ -577,7 +577,7 @@
             subName.next();             // used as emit() was used for an EventEmitter object
             Can be subscribed as any other observable.
 
--Forms:
+-Forms (Template Driven):
     Angular provides a better functionality to handle forms.
     Using FormModule:
         To use form module, go to app.module.ts file and do the following:
@@ -613,4 +613,160 @@
         Some of the validators are:
             required: it is a directive provided by angular which sets the element to be required for it to be a valid input.
             email: checks weather the email is valid or not.
+    Form Classes:
+        Angular dynamically adds some css classes giving us information of the individual control (html element).
+        Adding some functionality by using dynamically added css classes of angular:
+            Disabling the submit button when the form is not valid:
+                We can use property binding with disabled on the submit button as follows:
+                    <button type="submit" [disabled]="!f.valid">
+                    Here, f is the local reference for the form tag and f.valid contains a boolean as per the validity of the form.
+            Using ng-invalid, ng-touched:
+                In the css file, do the following:
+                # input.ng-invalid.ng-touched {
+                #    border: 1px solid red;
+                # }
+                This adds the functionality to the form when the user adds any invalid data in the input field.
+            Controling an individual element inside the form:
+                <input type="email" #email="ngModel">
+                Here we setup a local reference for a single input element inside the form.
+                This allows us to use email.touched or email.valid or any other dynamic states of angular.
+    Setting default values for an element:
+        Use ngModel with property binding and set its value to a defined default value.
+        Example:        # <input type="text" [ngModel]="'Pranav'">
+            Here, ngModel not only turns the input element into a control, but also sets the default value of the textbox.
+    Two way binding on ngModel;
+        We can use two way binding with ngModel to dynamically use the data in the element entered by the user.
+    Grouping form elements:
+        We can apply control on specific elements all together by grouping them.
+        We can group them by using an attribute 'ngModelGroup' and equating it to the group name.
+        This attribute can be applied on a div element which contains the elements which are to be grouped together.
+        Example:
+            # <div ngModelGroup="groupName" #groupName="ngModelGroup">
+            Here, groupName is set to be a sub javascript object inside the value object in the NgForm object.
+            #groupName can be used in the template itself for using dynamic checks like groupName.valid or groupName.touched, etc.
+    Using Radio buttons:
+        # <div class="radio" *ngFor="let gender of genders">
+        #     <label>
+        #         <input type="radio" name="gender" ngModel [value]="gender"> {{ gender }}
+        #     </label>
+        # </div>
+        ngModel converts it into an angular control element.
+        [value] sets a value for the radio checkbox.
+    Presetting value for the form elements:
+        -@ViewChild('localRef') fName: NgForm;
+        -this.fName.setValue({
+            pass this javascript object all the parameters and its values which are included in the ngForm object
+        });
+            or
+        -this.fName.form.patchValue({
+            pass this js object with only the parameters and values which you want to change
+        })
+    Accessing the values of the form:
+        Values of each control element can be accessed in the same way as we access a javascript object.
+        The NgForm object created via @ViewChild can be used for this.
+        Example:
+            this.fName.value.username;      // accessing a control named username
+            this.fname.fGroup.email;        //  accessing a control named email which is inside a form group named fGroup
+    Reset a form:
+        To reset the form:
+            # this.fName.reset()
+            We can either leave the argument empty to simply reset the form or pass a js object to reset the form to specific values. 
+
+-Forms (Reactive):
+    This enables the form to be created Programatically (within the typescript file) and then it is synced with the DOM.
+    For Reactively creating forms:
+        In the app.module.ts file:
+            # import { ReactiveFormsModule } from '@angular/forms'
+            Inside 'imports' of @NgModule decorator, add 'ReactiveFormsModule' to it.
+        Inside the Component typescript file:
+            # import { FormGroup } from '@angular/forms'
+            Crate a property of type 'FormGroup'.
+            This property will hold our form.
+    Creating a form:
+        # this.fName = new FormGroup({
+            'username': new FormControl(null),
+            'email': new FormControl(null),
+            'gender': new FormControl('male')           // here male is a default value given to the control
+          });
+        The above mensioned code creates a form with the mensioned js object in the argument of the FormGroup object.
+        For this, we Need to import 'FormControl' from '@angular/forms'.
+    Sync the reactively created form with the DOM:
+        Goto the template file
+        In the form element, add a directive as follows:
+            <form [formGroup]="fName">
+        Now to setup the FormControls:
+            <input type="text" formControlName="username">
+            This input box will now be binded to the username property of the form group.
+    Submitting a Reactive form:
+        It is done in the same way as in TD approach:
+            # <form [formGroup]="fname" (ngSubmit)="onSubmit()">
+        Here we donot need to pass any local reference to the onSubmit function as the FormGroup object is available in the typescript file itself.
+    Adding valiadators to the FormControl objects:
+        import { Validators } from '@angular/forms';
+        Specify the validators in the FormControl object as follows:
+            # 'username' = new FormControl(null, Validators.required);
+            Here, null is the default value, Validators.required is the Validator attatched to the 'username' control.
+            We can add multiple validators by simply passing an array of validators instead of a single validator.
+    Accessing FormGroup object properties for a FormControl:
+        In TD approach, this is done by specifying a local reference on the control and calling classes such as valid or touched.
+        For Reactive approach:
+            Use 'fname.get('formControlName').valid'
+    Specifying FormGroup inside of the root formGroup:
+        Keep all the controls, which are to be included into the formGroup, inside a div tag and then add a directive to the div tag:
+            <div formGroupName="userData">
+        Now we can access the controls inside the 'userData' formGroup by using the '.' notation to specify the path of the control.
+    Reactive array of form control:
+        It is used to dynamically add new FormControls.
+        To create FormArray:
+            Add the FormArray control to the main FormGroup of the form.
+            import {{ FormArray }} from '@angular/forms'
+            Now we can push FormControl objects into the array by using:
+                (<FormArray>this.fName.get('fArrayName')).push(fControlName);
+                Here, we need to typecast the FormArray to avoid errors.
+        To use the array in the template file:
+            <div formArrayName="fArrayName">        // tells angular that FormArray will lie under this div
+            To iterate through the FormArray:
+                <div *ngFor="let fControlName of fName.get('formArray').controls; let i = index">
+                    <input type="text" formControlName="i">
+                </div>
+    Creating custom validators:
+        Validators are simply functions which are defined as shown below:
+            forbiddenNames(control: FormControl): {[s: string]: boolean} {
+                if( === ) {
+                    return {'nameIsForbidden': true};
+                }
+                return null;
+            }
+        To use this validator, simply pass the reference of the validator function as an argument of the FormControl object as:
+            # this.forbiddenNames.bind(this)
+    Using Error codes:
+        # fName.get('username').errors['required']
+        This line can be used with ngIf directive.
+    Asynchronous  Validators:
+        validatorName(control: FormControl): Promise<any> | Observable<any> {
+            const promise: Promise<any>((resolve, reject) => {
+                setTimeout(() => {
+                    if (control.value === 'test@test.com') {
+                        resolve ({'emailIsForbidden': true});
+                    } else {
+                        resolve(null);
+                    }
+                }, 1500);
+            });
+            return promise;
+        }
+        Using asynchronous valiadators:
+            Async validator can be used my putting it in the 3rd argument of the FormControl object.
+    Reacting to status and value changes:
+        # this.fName.valueChanges.subscribe({
+        #     (value) => console.log(value)
+        # });
+                        or
+        # this.fName.statusChanges.subscribe({
+        #     (status) => console.log(status)
+        # });
+    Setting and Patching values:
+        # this.fName.setValue({});
+        # this.fName.patchValue({});
+        # this.fName.reset();
     
