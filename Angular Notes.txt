@@ -56,12 +56,11 @@
 -Using created Components:
     The created components can only be used in the app.component.html file.
     It can be used using the selector as a html tag which we defined for the component.
+    One component can be used in the other component with the help of its selector.
 
 -Creating Component using CLI:
     $ ng generate component compName        or          $ ng g c compName
     This will automatically create a folder in the apps folder with the name of the component and will automatically make the necessary changes in the app.module.ts file.
-
--> One component can be used in the other component with the help of its selector.
 
 -Using Inline HTML:
     To use inline html instead of specifying a template in the templateUrl in component.ts file, use template and assign it with the html code wrapped in quotes.
@@ -769,4 +768,160 @@
         # this.fName.setValue({});
         # this.fName.patchValue({});
         # this.fName.reset();
-    
+
+-Pipes:
+    It provides the ability to transform the output in the template.
+    Built in Pipes:
+        username
+        date
+    Using Pipes:
+        Using Pipe with string Interpolation:
+            { string.name | uppercase }
+            Here, '|' symbol represents that we are using a pipe, and 'uppercase' is a pipe which transforms the output to be completely uppercase.
+    Passing parameters to a pipe:
+        Not all pipes accepts parameters. Which does, we can pass them as below:
+            { string.date | date: 'parameter1': 'parameter2' }
+    Using multiple pipes:
+        { string.date | date: 'parameter1': 'parameter2' | uppercase }
+        It parses from left to right, i.e. first date pipe will be implemented, than uppercase pipe will be implemented on its result.
+    Creating a custom pipe:
+        Create a file named 'pipeName.pipe.ts'.
+        Add 'PipeName' to declarations in the @NgModel in 'app.module.ts'.      // Make sure PipeName is imported
+        Inside the pipe.ts file:
+            import { Pipe, PipeTransform } from '@angular/core';
+            @Pipe({
+                name: 'pipeName'
+            })
+            export class PipeNamePipe implements PipeTransform {
+                transform(value: any, parameter1, parameter2) {
+                    return value <WhateverYouWantYourPipeToDo>
+                }
+            }
+            or
+        Using CLI:
+            ng generate pipe pipeName       or      ng g p pipeName
+    Pure Pipes:
+        Pure pipes doesnot reimplement the pipe whenever the data is modified.
+        We can convert pure pipe to inpure, i.e. set it to reimplement the pipe whenever data is changed by doing following:
+            Inside @Pipe decorator:
+                @Pipe({
+                    name: 'pipeName',
+                    pure: false
+                })
+
+-Making Http Requests:
+    Anatomy of a Http Request:
+        Http Verb(POST, GET, PUT): used for REST APIs.
+        URL(API Endpoint): depends on the API.
+        Headers(Metadata)
+        Body
+    Adding Http Functionality to Angular Project:
+        In app.module.ts:
+            # import { HttpClientModule } from '@angular/common/http';
+            Inside the 'imports' array, add 'HttpClientModule'.
+    Using HttpClient and sending httpRequest to firebase:
+        In component.ts file:
+            # import { HttpClient } from '@angular/common/http';
+            # constructor(private http: HttpClient) {}
+        To send post request to firebase:
+            # this.http.post(
+                'http://apiEndPointUrl.com/posts.json', 
+                { a js object which is to be sent }
+                ).subscribe(
+                    responseData => {
+                        console.log(responseData);
+                    });
+    Fetching from firebase:
+        # this.http.get('http://apiEndPointUrl.com/posts.json').subscribe(posts => {
+            console.log(posts);
+        })
+        'posts' have the json object fetched from the firebase.
+    Transforming recieved json object to js object:
+        # this.http.get('http://apiEndPointUrl.com/posts.json').pipe(
+            map(responseData => {
+                const postsArray = [];
+                for (const key in responseData) {
+                    if (responseData.hasOwnProperty(key)) {
+                        postsArray.push({...responseData[key], id: key});
+                    }
+                }
+            })
+        ).subscribe(posts => {
+            console.log(posts);
+        })
+    Defining return types to http methods:
+        # this.http.post<ReturnType>().subscribe();
+        All http methods are generic methods in which we can specify the return type of the objects.
+    Deleting data from firebase:
+        # this.http.delete('http://apiEndPointUrl.com/posts.json');
+        This will delete all the objects stored in 'posts' node on firebase.
+    Managing Errors:
+        # this.http.get('http://apiEndPointUrl.com/posts.json').subscribe(posts => {
+            console.log(posts);
+        }, error => {
+            this.error = error.message;
+        })
+        The subscribe() function will accept a second argument (error) which helps us handling errors as shown above.
+        Inside the arrow function with argument error, error.message is used to access the error message and it is stored in a property known as error.
+        The 'error' itself is a 'HttpErrorResponse' object.
+        catchError/throwError:
+            # import { catchError } from 'rxjs/operators';
+            catchError can be called as an argument in pipe when we use pipe to modify the observable before subscribing it.
+            .pipe(observable Modification Function, catchError(errorRes => {
+                return throwError(errorRes);
+            })).subscribe();
+            Here, throwError yields a new observable by wrapping an error.
+    Adding Headers:
+        We can add headers to our http requests by adding a javascript object as the last argument of get or post or any other method:
+        Example:
+            # import { HttpHeaders } from '@angular/common/http';
+            # this.http.get('http://apiEndPointUrl.com/posts.json', { headers: new HttpHeaders({ 'keyName': 'value' }) });
+    Adding Query Parameters:
+        # import { HttpParams } from '@angular/common/http';
+        # this.http.get('http://apiEndPointUrl.com/posts.json', { params: new HttpParams().set('print': 'pretty') });
+        Here, HttpParams is an object which is immutable and key value pairs can also be inserted into it as:
+            # let setParams = new HttpParams();
+            # setParams = setParams.append('print', 'pretty');
+            Here, print and pretty are key value pairs accepted by the firebase.
+    Observing different type of responses:
+        # this.http.post('http://apiEndPointUrl.com/posts.json', postData,  { observe: 'response' });
+        Here, observe allows us to modify what we want as the response after our httpRequest.
+        'response' can be replaced by 'body', 'events', etc.
+        With 'events' to be observed, we can use 'tap' observable inside the 'pipe' method which is used to listen to the response without interupting it.
+            # import { tap } from 'rxjs/operators';
+    Changing response type:
+        # this.http.post('http://apiEndPointUrl.com/posts.json', postData,  { responseType: 'json' });
+        We can set responseType to json, text, blob, etc. Default is json.
+    -Interceptors:
+        Interceptors allows us to run code right before the requests leaves the application.
+        Using interceptors:
+            Create a file named 'iName-interceptor.service.ts'
+            In the app.module.ts:
+                # import { HTTP_INTERCEPTORS } from '@angular/common/http';
+                providers[{provide: HTTP_INTERCEPTORS, useClass: iNameInterceptorService, multi: true}]
+                Here, multi informs not to overwrite existing interceptor
+            In this file:
+                # import { HttpHeaders, HttpRequest, HttpHandler } from '@angular/common/http';
+                export class iNameInterceptorService implements HttpInterceptor {
+                    intercept(req: HttpRequest<any>, next: HttpHandler) {
+                        ====
+                        return next.handle(req);
+                    }
+                }
+        Manipulating request objects:
+            # const modifiedRequest = req.clone({headers: req.headers.append('key', 'value')});
+            # return next.handle(modifiedRequest);
+        Response Interceptors:
+            # return next.handle(modifiedRequest).pipe(
+                tap(event => {
+                    console.log(event);
+                    if(event.type === HttpEventType.Response) {
+                        console.log('Response has arrived');
+                        console.log(event.body);
+                    }
+                })
+            );
+            Here, handle() itself is an observable.
+            It sends the request from the app to the server, and also capture the response recieved from the server.
+            We can manipulate the response as shown above.
+        
