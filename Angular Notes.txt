@@ -569,6 +569,10 @@
         Few operators:
             map(data => {}): implements the specified arrow function on the data of the observable.
             filter(data => {}): let the observable work only if the specified condition inside the function returns true.
+            tap(data => {}): retrieve response from an ongoing subscription without disturbing the flow.
+            catchError(error => {}): it catches the error recieved while recieving an http response.
+            take(num: number): it tells the observable to unsubscribe after recieving the number of values as passed in its argument.
+            exaustMap(obs => {}): inside this, we return yet another observable which is to be activated just after current ongoing observable.
     Subject:
         It is a replacement for EventEmitter for cross component operations.
         It works in the same way as the EventEmitter with a few differences:
@@ -824,7 +828,7 @@
             # import { HttpClient } from '@angular/common/http';
             # constructor(private http: HttpClient) {}
         To send post request to firebase:
-            # this.http.post(
+            # this.http.post(           // put can also be used in place of post, but put will replace all the stored data at the node
                 'http://apiEndPointUrl.com/posts.json', 
                 { a js object which is to be sent }
                 ).subscribe(
@@ -924,4 +928,9 @@
             Here, handle() itself is an observable.
             It sends the request from the app to the server, and also capture the response recieved from the server.
             We can manipulate the response as shown above.
-        
+
+->Storing and retrieving data on the file system of the browser:
+    # localStorage.setItem('userData', JSON.stringify(user));
+    This stores the data of logged in user in the system fileSystem of the browser so that when we reload our app, we donot loose the data of the logged in user.
+    # JSON.parse(localStorage.getItem('userData'));
+    This retrieves the locally stored 'userData' value.
