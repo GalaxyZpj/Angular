@@ -448,9 +448,12 @@
             { path: ':id/edit', component: EditServerComponent},
         ]},
         To load the child route, simply add a <router-outlet> in the template file of the parent.
-    To preserve our query parameters:
+    To preserve (use last route queryParams, does not allow adding new queryParams) our query parameters:
         this.router.navigate(['edit'], {relativeTo: this.route, queryParamsHandling: 'preserve'});
         Simply add this last 'queryParamsHandling' property and set it to 'presereve'.
+    To merge (use last route queryParams, as well as allow adding new queryParams) our query parameters:
+        this.router.navigate(['edit'], {relativeTo: this.route, queryParamsHandling: 'merge'});
+        Simply add this last 'queryParamsHandling' property and set it to 'merge'.
     Redirecting and Wildcard Routes:
         To have a page for unknown url for the app, we will setup a page-not-found component for our app.
         { path: '', redirectTo: '/path' }:
